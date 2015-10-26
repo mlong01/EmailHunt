@@ -6,6 +6,7 @@ from PyQt4.QtWebKit import *
 
 # Regular expressions for pattern matching
 EMAIL_REGEX = '(\w+(\.\w*)*@\w+(\.\w*)+)'
+RELATIVE_LINK_REGEX = ''
 
 # Class that renders a webpage, allowing JS elements to load
 # Code for this class was pulled from from 
@@ -79,7 +80,7 @@ def scrape_and_search(base):
             for link in new_links:
                 if not link in visited:
                     visited[link] = 'visited'
-                    pages.add(link)
+                    pages.append(link)
 
         except:
             print "Something went wrong"
