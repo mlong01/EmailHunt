@@ -30,7 +30,6 @@ RELATIVE_LINK_CLEAN_REGEX = '\/[^"]+'
 #
 # Class that renders a webpage, allowing JS-rendered elements to load and then
 # be scraped by the tool
-
 class Render(QWebPage):  
   def __init__(self, urls, cb):
     self.app = QApplication(sys.argv)  
@@ -102,8 +101,10 @@ def pull_emails(body):
     matches = re.findall(re.compile(EMAIL_REGEX), body)
     emails = []
     for m in matches:
+        # regex contains capture groups - element 0 is whole email string
         emails.append(m[0])
 
+    # remove duplicates within the list
     emails = list(set(emails))
 
     return emails
@@ -119,10 +120,12 @@ def pull_emails(body):
 #            relative paths in href element. Does not work for any absolute
 #            paths in body
 def pull_links(base_url, body):
+    # finds 'href="/foo"'
     matches = re.findall(re.compile(RELATIVE_LINK_FIND_REGEX), body)
     links = []
     
     for m in matches:
+        # cleans off 'href=""', leaving '/foo'
         rel_path = re.search(re.compile(RELATIVE_LINK_CLEAN_REGEX), m)
    
         if rel_path:
