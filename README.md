@@ -10,6 +10,11 @@ To install on Ubuntu, run
 
 > `sudo apt-get install python-qt4`
 
+[Here](http://www.pythonschool.net/pyqt/installing-pyqt-on-mac-os-x/) is
+a reference for installing on Mac, and 
+[here](http://www.pythonschool.net/pyqt/installing-pyqt-on-windows/) is
+a reference for installing on Windows.
+
 
 #### Usage: 
 
