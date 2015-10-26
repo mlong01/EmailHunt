@@ -21,7 +21,8 @@ a reference for installing on Windows.
 > `python scrape_class.py [url]`
 
 [url] is a domain that _includes_ the protocol, meaning include `http://` or 
-`https://` in your url. For example, `https://airbnb.com` is a great url
+`https://` in your url. For example, `https://foo.com` is a great url
+
 
 #### Acknowledgements:
 [This
