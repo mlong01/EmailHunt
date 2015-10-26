@@ -4,9 +4,14 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *  
 from PyQt4.QtWebKit import *  
 
-# Regular expressions for pattern matching
+# Matches anything of form w.x@y.z ('.x' is optional)
 EMAIL_REGEX = '(\w+(\.\w*)*@\w+(\.\w*)+)'
-RELATIVE_LINK_REGEX = ''
+
+# Used to find relative links in html body
+RELATIVE_LINK_FIND_REGEX = 'href="\/.+"'
+RELATIVE_LINK_CLEAN_REGEX = '\/[^"]+'
+
+# TODO: regex for finding absolute links
 
 # Class that renders a webpage, allowing JS elements to load
 # Code for this class was pulled from from 
@@ -50,7 +55,14 @@ def pull_emails(body):
 #            relative paths in href element. Does not work for any absolute
 #            paths in body
 def pull_links(body, base_url):
-    return []
+    matches = re.findall(re.compile(RELATIVE_LINK_FIND_REGEX), body)
+    links = []
+    for m in matches:
+        rel_path = re.search(re.compile(RELATIVE_LINK_CLEAN_REGEX), m).group()
+        to_append = base_url + rel_path
+        links.append(to_append)
+        print to_append 
+    return links
 
 # Function that, when given a URL, finds and prints the email addresses
 # on the website
@@ -62,28 +74,30 @@ def scrape_and_search(base):
     visited = {}
 
     while pages:
+        print "Pages: "
+        print pages
         url = pages.pop()
 
-        try:
-            r = Render(url)
-            html = r.frame.toHtml()
-            
-            # need to check url actually matched
-            # can compare to <html><head></head><body></body></html>
-            # if not, continue
+        #try:
+        r = Render(url)
+        html = r.frame.toHtml()
+        
+        # need to check url actually matched
+        # can compare to <html><head></head><body></body></html>
+        # if not, continue
 
-            emails = pull_emails(html)
-            for email in emails:
-                print email
+        emails = pull_emails(html)
+        for email in emails:
+            print "HERE'S AN EMAIL:    " + email
 
-            new_links = pull_links(html, url)
-            for link in new_links:
-                if not link in visited:
-                    visited[link] = 'visited'
-                    pages.append(link)
+        new_links = pull_links(html, url)
+        for link in new_links:
+            if not link in visited:
+                visited[link] = 'visited'
+                pages.append(link)
 
-        except:
-            print "Something went wrong"
+        #except:
+        #    print "Something went wrong"
 
 #################################################
 
