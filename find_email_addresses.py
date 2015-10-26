@@ -1,3 +1,12 @@
+# find_email_addresses.py
+# 
+# Written by:       Matt Long
+# Last modified:    10/26/15
+#
+# Purpose:          Given a domain, prints out a list of all email addresses 
+#                   that can be found on the given page as well as its child
+#                   pages.
+
 import sys, os
 import re
 from PyQt4.QtGui import *  
@@ -15,29 +24,43 @@ RELATIVE_LINK_CLEAN_REGEX = '\/[^"]+'
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-# Class that renders a webpage, allowing JS elements to load
-# Code for this class was pulled from from 
-#       webscraping.com/blog/Scraping-JavaScript-webpages-with-webkit/
-# Module is licenced under LGPL, so I'm allowed to use it
+# Code for this class was modified by me but originally found on
+# https://webscraping.com/blog/Scraping-multiple-JavaScript-webpages-with-webkit/
+# Module is licenced under LGPL, so I'm allowed to use it (I'm pretty sure)
+#
+# Class that renders a webpage, allowing JS-rendered elements to load and then
+# be scraped by the tool
+
 class Render(QWebPage):  
   def __init__(self, urls, cb):
     self.app = QApplication(sys.argv)  
     QWebPage.__init__(self)  
     self.loadFinished.connect(self._loadFinished)  
+    
+    # list of urls to scrape through - added to during execution
     self.urls = urls  
+
+    # callback so all HTML bodies don't have to be stored in memory
     self.cb = cb
+
+    # dictionaries of urls and emails to prevent duplication
     self.visited_sites = {}
     self.found_emails = {}
+
     self.crawl()  
     self.app.exec_()  
-      
+
+
+  # called after init finishes setup    
   def crawl(self):  
     if self.urls:  
       url = self.urls.pop(0)  
       self.mainFrame().load(QUrl(url))  
     else:  
       self.app.quit()  
-        
+
+
+  # fires after page loads in crawl function          
   def _loadFinished(self, result):  
     frame = self.mainFrame()  
     url = str(frame.url().toString())  
@@ -58,8 +81,12 @@ class Render(QWebPage):
     self.crawl()  
 
 
-# Function that, when given a URL, finds and prints the email addresses
-# on the website
+# Purpose:   when given a url and a body of text (such as HTML), return
+#            email addresses found on page as well as child pages on site
+# Arguments: regex-searchable string (body of webpage), string (URL of
+#            webpage passed in as body)
+# Returns:   a tuple containing a list of email addresses and a list of
+#            absolute urls to search in future iterations
 def scrape_and_search(url, html):
     emails = pull_emails(html)
     urls = pull_links(url, html)
@@ -105,9 +132,7 @@ def pull_links(base_url, body):
         
     return links
 
-
-
-#################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 if len(sys.argv) != 2:
     print "USAGE: python scrape.py [url]"
