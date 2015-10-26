@@ -38,8 +38,14 @@ try:
     # can compare to <html><head></head><body></body></html>
 
     matches = re.findall(re.compile(NEW_REGEX), html)
+    emails = []
     for m in matches:
-        print m[0]
+        emails.append(m[0])
+
+    emails = list(set(emails))
+
+    for e in emails:
+        print e
 
 except:
     print "Something went wrong"
