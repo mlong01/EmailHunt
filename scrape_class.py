@@ -26,7 +26,8 @@ class Render(QWebPage):
     self.loadFinished.connect(self._loadFinished)  
     self.urls = urls  
     self.cb = cb
-    self.visited = {}
+    self.visited_sites = {}
+    self.found_emails = {}
     self.crawl()  
     self.app.exec_()  
       
@@ -45,11 +46,13 @@ class Render(QWebPage):
     emails, urls = self.cb(url, html)
 
     for email in emails:
-        print email
+        if not email in self.found_emails:
+            self.found_emails[email] = 'found'
+            print email
 
     for url in urls:
-        if not url[1] in self.visited:
-            self.visited[url[1]] = 'visited'
+        if not url[1] in self.visited_sites:
+            self.visited_sites[url[1]] = 'visited'
             self.urls.append(url[0])
     
     self.crawl()  
@@ -110,7 +113,7 @@ if len(sys.argv) != 2:
     print "USAGE: python scrape.py [url]"
     sys.exit(0)
 
-urls = ["http://" + sys.argv[1]]
+urls = [sys.argv[1]]
 
 r = Render(urls, cb=scrape_and_search)
 
