@@ -7,7 +7,7 @@ from PyQt4.QtWebKit import *
 # Any num of non-whitespace chars followed by @ followed by a word
 # followed by a '.' followed by another word
 EMAIL_REGEX = '\S*@\w*.\w*'
-NEW_REGEX = '(\w+(\.\w*)*@\w*(\.\w*)*)'
+NEW_REGEX = '(\w+(\.\w*)*@\w+(\.\w*)+)'
 
 ### This class taken from (url plug in later) ###
 class Render(QWebPage):  
